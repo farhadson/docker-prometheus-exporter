@@ -1,0 +1,10 @@
+### relative to the root build
+### .gitignore, but for the build context
+**/*_dockerignore
+# *_ignored
+remote_write_pass
+# dockerbuild-help.md
+# README.md
+*.md
+.env
+out/*
