@@ -12,6 +12,10 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build -ldflags="-s -w" -v -o /usr/local/bin/reset-sidecar-four ./...
 
+# Export stage with only the binary
+FROM scratch AS export
+COPY --from=builder /usr/local/bin/reset-sidecar-four /reset-sidecar-four
+
 ### 2nd build
 FROM artnexus.partdp.ir/debian:bullseye-slim
 

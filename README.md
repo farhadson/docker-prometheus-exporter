@@ -289,3 +289,16 @@ docker run --rm \
 - Counter resets trigger an immediate publish to all active sinks.
 - The file sink writes one JSON line per metric state snapshot.
 - The sidecar keeps state in memory; persistence depends on mounted volumes (e.g. file sink output).
+
+
+### Some side note
+since I wanted to use the resulted build go image also in a debian vm, I'd set two things:
+1. the base image that I used for go is a debian 11 bullseye one before any rc one so it's go version is a bit lower (1.24.6-bullseye). this also resulted in changing go.mod file to `go 1.24.0`
+2. I've created an export stage build phase that if used with the below docker build command exports the binary to the out folder
+```
+docker build \
+  --build-arg GOPROXY=https://jfrog.partdp.ai/artifactory/api/go/go \
+  --target export \
+  --output type=local,dest=./out \
+  .
+```
