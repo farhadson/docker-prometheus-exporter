@@ -45,6 +45,11 @@ if [ "${REMOTE_WRITE_INSECURE_SKIP_VERIFY,,}" = "true" ]; then
   args+=("--remote-write-insecure-skip-verify=true")
 fi
 
+# Scrape TLS / mTLS (applies to all HTTPS scrape targets in the Go binary)
+append_if_set "--tls_targets_ca" "${TLS_TARGETS_CA:-}"
+append_if_set "--tls_cert" "${TLS_CERT:-}"
+append_if_set "--tls_key" "${TLS_KEY:-}"
+
 append_if_set "--scrape-interval" "${SCRAPE_INTERVAL:-}"
 append_if_set "--publish-interval" "${PUBLISH_INTERVAL:-}"
 append_if_set "--timezone" "${TIMEZONE:-}"

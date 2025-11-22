@@ -74,6 +74,9 @@ In **env-driven mode**, these env vars are translated to the corresponding Go fl
 | `TIMEZONE`                          | `--timezone`                       | `Local` (binary default)                     | Timezone for file sink timestamps                                      |
 | `JOB`                               | `--job`                            | `sidecar_metrics` (binary default)           | Job label attached to emitted series                                   |
 | `VERBOSE`                           | `--verbose`                        | `false`                                      | `true` to enable verbose logging                                       |
+| `TLS_TARGETS_CA` | `--tls_targets_ca` | *(none)* | CA file path for verifying HTTPS scrape targets (optional) |
+| `TLS_CERT`       | `--tls_cert`       | *(none)* | Client TLS certificate for scraping HTTPS targets (optional, for mTLS) |
+| `TLS_KEY`        | `--tls_key`        | *(none)* | Client TLS key for scraping HTTPS targets (optional, for mTLS) |
 
 > Pushgateway (`--pushgateway-url`, `--push-job`) and scrape basic auth (`--basic-auth-user`, `--basic-auth-pass`) are currently only available via raw CLI flags, not env vars.
 
@@ -110,7 +113,7 @@ This avoids putting the password into `.env` or on the CLI. For interactive use,
 
 ---
 
-## 🔒 TLS CA
+## 🔒 TLS CA (remote write)
 
 The CA used for `remote_write` TLS is selected as:
 
@@ -133,6 +136,9 @@ To supply your own CA:
 ```
 
 The binary then loads this CA file when establishing TLS to `REMOTE_WRITE_URL`.
+
+Note: TLS/mTLS for scraping targets is configured separately via the `--tls_targets_ca`, `--tls_cert`, and `--tls_key` CLI flags (currently CLI-only). 
+
 
 ---
 
