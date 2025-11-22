@@ -50,6 +50,7 @@
 //   --timezone                IANA timezone for file timestamps (default: Local)
 //   --job                     job label to attach to emitted metrics (default: sidecar_metrics)
 //   --verbose                 enable verbose logging
+//   --log-file               path to log file (optional; default logs to stderr/stdout)
 //
 // Schedules:
 //   - Scrape interval:       default 30s
@@ -181,6 +182,7 @@ var (
     flagScrapeHTTPTimeout   = flag.Duration("scrape-http-timeout", 10*time.Second, "HTTP timeout for scraping targets")
     flagInsecureSkipVerify  = flag.Bool("remote-write-insecure-skip-verify", false, "Skip TLS verification for remote_write (NOT recommended)")
     flagRemoteWriteSniName  = flag.String("remote-write-server-name", "", "Override TLS SNI/ServerName for remote_write (optional)")
+	flagLogFile            = flag.String("log-file", "", "Path to log file (optional; defaults to stderr/stdout)")
 )
 
 
@@ -690,6 +692,16 @@ func doRemoteWrite(store *stateStore, passthrough []string, remoteURL string) {
 func main() {
     flag.Parse()
 
+	// Optional log file: if set, log to both stderr and the given file.
+	if *flagLogFile != "" {
+		f, err := os.OpenFile(*flagLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatalf("failed to open log file %s: %v", *flagLogFile, err)
+		}
+		// Send logs to both stderr (container logs) and file.
+		mw := io.MultiWriter(os.Stderr, f)
+		log.SetOutput(mw)
+	}
 
     targets := splitCSV(*flagTargets)
     metrics := splitCSV(*flagMetrics)

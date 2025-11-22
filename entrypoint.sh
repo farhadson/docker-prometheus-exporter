@@ -55,16 +55,21 @@ append_if_set "--publish-interval" "${PUBLISH_INTERVAL:-}"
 append_if_set "--timezone" "${TIMEZONE:-}"
 append_if_set "--job" "${JOB:-}"
 
+# Log file: prefer LOG_FILE; fallback to LOG_FILENAME; default stays under /var/log/reset-sidecar
+if [ -z "${LOG_FILE:-}" ] && [ -n "${LOG_FILENAME:-}" ]; then
+  LOG_FILE="${LOG_FILENAME}"
+fi
+append_if_set "--log-file" "${LOG_FILE:-/var/log/reset-sidecar/app.log}"
+
 if [ "${VERBOSE,,}" = "true" ]; then
   args+=("--verbose")
 fi
 
 echo "Running with args: ${args[*]}" >&2
-
 echo "Starting reset-sidecar..."
-mkdir -p /var/log/reset-sidecar
-LOG_FILE="/var/log/reset-sidecar/${LOG_FILENAME:-app.log}"
 
-exec /usr/local/bin/reset-sidecar-four "${args[@]}" \
-  > >(tee -a "${LOG_FILE}") \
-  2> >(tee -a "${LOG_FILE}" >&2)
+# Ensure default log directory exists if using the default path
+mkdir -p /var/log/reset-sidecar
+
+# Let the Go binary handle writing to the log file; no more tee here
+exec /usr/local/bin/reset-sidecar-four "${args[@]}"

@@ -10,13 +10,13 @@ The image is built using a multi-stage Dockerfile. You can customize the Go modu
 
 | Build arg | Default                                         | Description                                                                 |
 |-----------|-------------------------------------------------|-----------------------------------------------------------------------------|
-| `GOPROXY` | `https://jfrog.partdp.ai/artifactory/api/go/go` | Primary Go module proxy; `,direct` is appended so direct fallback is enabled |
+| `GOPROXY` | `https://proxy.golang.org` | Primary Go module proxy; `,direct` is appended so direct fallback is enabled |
 
 Example:
 
 ```
 docker build \
-  --build-arg GOPROXY=https://jfrog.partdp.ai/artifactory/api/go/go \
+  --build-arg GOPROXY=https://proxy.golang.org \
   -t my-reset-sidecar:latest .
 ```
 
@@ -303,7 +303,7 @@ since I wanted to use the resulted build go image also in a debian vm, I'd set t
 2. I've created an export stage build phase that if used with the below docker build command exports the binary to the out folder
 ```
 docker build \
-  --build-arg GOPROXY=https://jfrog.partdp.ai/artifactory/api/go/go \
+  --build-arg GOPROXY=https://proxy.golang.org \
   --target export \
   --output type=local,dest=./out \
   .
